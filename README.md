@@ -52,7 +52,7 @@
 
 There are two widely adopted image encoders for paragraph captioning: [DenseCap](https://cs.stanford.edu/people/karpathy/densecap/) and [BottomUp](https://openaccess.thecvf.com/content_cvpr_2018/CameraReady/1163.pdf). They are responsible for detecting region of interests and encode them into dense vectors.
 
-* For DenseCap features we refer you to [jcjohnson/densecap](https://github.com/jcjohnson/densecap)，for more detailed instructions please follow [Wentong-DST/im2p](https://github.com/Wentong-DST/im2p).
+* For DenseCap features we refer you to [jcjohnson/densecap](https://github.com/jcjohnson/densecap)，for more detailed instructions please follow [chenxinpeng/im2p](https://github.com/chenxinpeng/im2p).
 * For BottomUp features we refer you to [peteanderson80/bottom-up-attention](https://github.com/peteanderson80/bottom-up-attention)，also recommend to follow [airsplay/lxmert](https://github.com/airsplay/lxmert) who provides a docker solution. 
 
 #### Download extracted ones
