@@ -31,15 +31,10 @@ class Decoder(nn.Module):
         self.sentence_rnn = nn.LSTM(input_size=feat_size, hidden_size=srnn_hidden_size, num_layers=srnn_num_layers,
                                     batch_first=True)
         self.cont_stop_layer = nn.Linear(srnn_hidden_size, 2)  # 0 for Continue, 1 for stop
-        self.topic_layer = nn.Sequential(
-            Highway(srnn_hidden_size, emb_size),
-            Highway(emb_size, emb_size),
-        )
+        self.topic_layer = Highway(srnn_hidden_size, emb_size)
 
         self.embedding_layer = nn.Embedding(vocab_size, emb_size)
         self.emb_dropout_layer = nn.Dropout(p=emb_dropout)
-
-        self.init_hidden_project_layer = nn.Linear(emb_size, wrnn_hidden_size)
 
         self.word_rnn = nn.LSTM(input_size=emb_size, hidden_size=wrnn_hidden_size, num_layers=wrnn_num_layers,
                                 batch_first=True)
@@ -51,21 +46,15 @@ class Decoder(nn.Module):
 
     def init_srnn_hidden(self, batch_size, device):
 
-        h0 = torch.zeros(self.srnn_num_layers, batch_size, self.wrnn_hidden_size).to(device)
-        c0 = torch.zeros(self.srnn_num_layers, batch_size, self.wrnn_hidden_size).to(device)
+        h0 = torch.zeros(self.srnn_num_layers, batch_size, self.srnn_hidden_size).to(device)
+        c0 = torch.zeros(self.srnn_num_layers, batch_size, self.srnn_hidden_size).to(device)
 
         return h0, c0
 
-    def init_wrnn_hidden(self, feature):
-        """
+    def init_wrnn_hidden(self, batch_size, device):
 
-        :param feature: (batch_size, emb_size)
-        :return:
-        """
-        feature = self.init_hidden_project_layer(feature)
-
-        h0 = feature.repeat(self.wrnn_num_layers, 1, 1)  # (wrnn_num_layers, batch_size, wrnn_hidden_size)
-        c0 = feature.repeat(self.wrnn_num_layers, 1, 1)
+        h0 = torch.zeros(self.wrnn_num_layers, batch_size, self.wrnn_hidden_size).to(device)
+        c0 = torch.zeros(self.wrnn_num_layers, batch_size, self.wrnn_hidden_size).to(device)
 
         return h0, c0
 
@@ -93,8 +82,8 @@ class Decoder(nn.Module):
         """
 
         :param visual_feat: (batch_size, enc_size)
-        :param encoded_captions: (batch_size, s_max, w_max) -- Note that <eos> is not included
-        :param caption_lengths: (batch_size, s_max) -- Note that <eos> is not included
+        :param encoded_captions: (batch_size, s_max, w_max)
+        :param caption_lengths: (batch_size, s_max)
         :return: all_predicts (batch_size, s_max, w_max, vocab_size), con_stop_unnorm (batch_size, s_max, 2)
         """
 
@@ -124,7 +113,7 @@ class Decoder(nn.Module):
             seq_len = caption_lengths[valid_batch_ind, i]  # (valid_batch_size, )
 
             wrnn_input_pps = pack_padded_sequence(wrnn_input, lengths=seq_len, batch_first=True, enforce_sorted=False)
-            h0, c0 = self.init_wrnn_hidden(topic_vec[valid_batch_ind, i])
+            h0, c0 = self.init_wrnn_hidden(valid_batch_size, device)
 
             wrnn_output_pps, _ = self.word_rnn(wrnn_input_pps, (h0, c0))
 
