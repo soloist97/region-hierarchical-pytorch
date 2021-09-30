@@ -5,6 +5,7 @@
 ## What is it?
 
 1. Region-Hierarchical is a baseline deep learning method for image paragraph captioning task. 
+   > [Krause, Jonathan, et al. "A hierarchical approach for generating descriptive image paragraphs." Proceedings of the IEEE conference on computer vision and pattern recognition. 2017.](https://arxiv.org/abs/1611.06607)
 2. Image paragraph captioning aims to generate a diverse and coherent paragraph to describe the given image. It is much more challenge than classic image captioning.
 3. This implementation is not the official one. 
 
