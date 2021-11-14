@@ -147,7 +147,7 @@ Here we report a baseline we trained from scratch on DenseCap features with our 
 
 ### Configurations
 
-```json
+```
 input_size     4096
 output_size     1024
 f_max     50
